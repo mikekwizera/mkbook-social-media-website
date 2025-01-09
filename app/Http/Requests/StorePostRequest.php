@@ -1,9 +1,6 @@
 <?php
-
 namespace App\Http\Requests;
-
 use Illuminate\Foundation\Http\FormRequest;
-
 class StorePostRequest extends FormRequest
 {
     /**
@@ -11,9 +8,8 @@ class StorePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -22,7 +18,15 @@ class StorePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'body' => ['nullable', 'string'],
+            'user_id' => ['numeric']
         ];
+    }
+    protected function prepareForValidation()
+    {
+        // Add your custom key to the request data
+        $this->merge([
+            'user_id' => auth()->user()->id,
+        ]);
     }
 }
