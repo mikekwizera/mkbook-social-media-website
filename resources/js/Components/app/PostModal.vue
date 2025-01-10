@@ -1,3 +1,108 @@
+<script setup>
+import {computed, onMounted, onUpdated, reactive, ref, watch} from 'vue'
+import {XMarkIcon, PaperClipIcon, BookmarkIcon} from '@heroicons/vue/24/solid'
+import {
+    TransitionRoot,
+    TransitionChild,
+    Dialog,
+    DialogPanel,
+    DialogTitle,
+} from '@headlessui/vue'
+import InputTextarea from "@/Components/InputTextarea.vue";
+import PostUserHeader from "@/Components/app/PostUserHeader.vue";
+import {useForm} from "@inertiajs/vue3";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import {isImage} from "@/helpers.js";
+
+const editor = ClassicEditor;
+const editorConfig = {
+    toolbar: ['bold', 'italic', '|', 'bulletedList', 'numberedList', '|', 'heading', '|', 'outdent', 'indent', '|', 'link', '|', 'blockQuote'],
+}
+const props = defineProps({
+    post: {
+        type: Object,
+        required: true
+    },
+    modelValue: Boolean
+})
+
+/**
+ * {
+ *     file: File,
+ *     url: '',
+ * }
+ * @type {Ref<UnwrapRef<*[]>>}
+ */
+const attachmentFiles = ref([])
+
+const form = useForm({
+    id: null,
+    body: ''
+})
+const show = computed({
+    get: () => props.modelValue,
+    set: (value) => emit('update:modelValue', value)
+})
+const emit = defineEmits(['update:modelValue'])
+watch(() => props.post, () => {
+    form.id = props.post.id
+    form.body = props.post.body
+})
+function closeModal() {
+    show.value = false
+    form.reset()
+    attachmentFiles.value = []
+}
+function submit(){
+    if (form.id) {
+        form.put(route('post.update', props.post.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false
+                form.reset()
+            }
+        })
+    } else {
+        form.post(route('post.create'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false
+                form.reset()
+            }
+        })
+    }
+    async function onAttachmentChoose($event) {
+        console.log($event.target.files)
+        for (const file of $event.target.files) {
+            const myFile = {
+                file,
+                url: await readFile(file)
+            }
+            attachmentFiles.value.push(myFile)
+        }
+        $event.target.value = null;
+        console.log(attachmentFiles.value)
+    }
+    async function readFile(file) {
+        return new Promise((res, rej) => {
+            if (isImage(file)) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    res(reader.result)
+                }
+                reader.onerror = rej
+                reader.readAsDataURL(file)
+            } else {
+                res(null)
+            }
+        })
+    }
+    function removeFile(myFile) {
+        attachmentFiles.value = attachmentFiles.value.filter(f => f !== myFile)
+    }
+
+}
+</script>
 <template>
     <teleport to="body">
         <TransitionRoot appear :show="show" as="template">
@@ -60,64 +165,3 @@
         </TransitionRoot>
     </teleport>
 </template>
-<script setup>
-import {computed, onMounted, onUpdated, reactive, ref, watch} from 'vue'
-import {XMarkIcon} from '@heroicons/vue/24/solid'
-import {
-    TransitionRoot,
-    TransitionChild,
-    Dialog,
-    DialogPanel,
-    DialogTitle,
-} from '@headlessui/vue'
-import InputTextarea from "@/Components/InputTextarea.vue";
-import PostUserHeader from "@/Components/app/PostUserHeader.vue";
-import {useForm} from "@inertiajs/vue3";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-const editor = ClassicEditor;
-const editorConfig = {
-    toolbar: ['bold', 'italic', '|', 'bulletedList', 'numberedList', '|', 'heading', '|', 'outdent', 'indent', '|', 'link', '|', 'blockQuote'],
-}
-const props = defineProps({
-    post: {
-        type: Object,
-        required: true
-    },
-    modelValue: Boolean
-})
-const form = useForm({
-    id: null,
-    body: ''
-})
-const show = computed({
-    get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', value)
-})
-const emit = defineEmits(['update:modelValue'])
-watch(() => props.post, () => {
-    form.id = props.post.id
-    form.body = props.post.body
-})
-function closeModal() {
-    show.value = false
-}
-function submit(){
-    if (form.id) {
-        form.put(route('post.update', props.post.id), {
-            preserveScroll: true,
-            onSuccess: () => {
-                show.value = false
-                form.reset()
-            }
-        })
-    } else {
-        form.post(route('post.create'), {
-            preserveScroll: true,
-            onSuccess: () => {
-                show.value = false
-                form.reset()
-            }
-        })
-    }
-}
-</script>
