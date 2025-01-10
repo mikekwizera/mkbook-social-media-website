@@ -13,7 +13,7 @@ defineProps({
 
 <template>
 
-    <Head title="MkShopify Social Media Website"/>
+    <Head title="MkBook Social Media Website"/>
 
             <AuthenticatedLayout>
                 <div class="grid lg:grid-cols-12 gap-3 p-4 h-full">
