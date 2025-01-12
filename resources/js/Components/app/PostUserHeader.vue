@@ -1,5 +1,4 @@
 <script setup>
-
 defineProps({
     post: {
         type: Object
@@ -9,9 +8,7 @@ defineProps({
         default: true
     }
 })
-
 </script>
-
 <template>
     <div class="flex items-center gap-2 ">
         <a href="javascript:void(0)">
@@ -30,7 +27,5 @@ defineProps({
         </div>
     </div>
 </template>
-
 <style scoped>
-
 </style>
