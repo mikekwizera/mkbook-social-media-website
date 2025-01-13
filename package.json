@@ -19,8 +19,6 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "@ckeditor/ckeditor5-build-classic": "^44.1.0",
-        "@ckeditor/ckeditor5-vue": "^7.3.0",
         "@headlessui/vue": "^1.7.23",
         "@heroicons/vue": "^2.2.0"
     }
