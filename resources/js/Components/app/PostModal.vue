@@ -1,6 +1,6 @@
 <script setup>
 import {computed, onMounted, onUpdated, reactive, ref, watch} from 'vue'
-import {XMarkIcon, PaperClipIcon, BookmarkIcon, ArrowUturnLeftIcon} from '@heroicons/vue/24/solid
+import {XMarkIcon, PaperClipIcon, BookmarkIcon, ArrowUturnLeftIcon} from '@heroicons/vue/24/solid'
 import {
     TransitionRoot,
     TransitionChild,
@@ -43,12 +43,10 @@ const show = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 })
-
 const computedAttachments = computed(() => {
     return [...attachmentFiles.value, ...(props.post.attachments || [])]
 })
 const emit = defineEmits(['update:modelValue', 'hide'])
-
 watch(() => props.post, () => {
     console.log("This is triggered ", props.post)
     form.body = props.post.body || ''
@@ -123,7 +121,8 @@ function removeFile(myFile) {
         myFile.deleted = true
     }
 }
-function undoDelete(myFile){
+
+function undoDelete(myFile) {
     myFile.deleted = false;
     form.deleted_file_ids = form.deleted_file_ids.filter(id => myFile.id !== id)
 }
@@ -132,86 +131,87 @@ function undoDelete(myFile){
 <template>
     <teleport to="body">
         <TransitionRoot appear :show="show" as="template">
-                <Dialog as="div" @close="closeModal" class="relative z-50">
-                    <TransitionChild
-                        as="template"
-                        enter="duration-300 ease-out"
-                        enter-from="opacity-0"
-                        enter-to="opacity-100"
-                        leave="duration-200 ease-in"
-                        leave-from="opacity-100"
-                        leave-to="opacity-0"
+            <Dialog as="div" @close="closeModal" class="relative z-50">
+                <TransitionChild
+                    as="template"
+                    enter="duration-300 ease-out"
+                    enter-from="opacity-0"
+                    enter-to="opacity-100"
+                    leave="duration-200 ease-in"
+                    leave-from="opacity-100"
+                    leave-to="opacity-0"
+                >
+                    <div class="fixed inset-0 bg-black/25"/>
+                </TransitionChild>
+
+                <div class="fixed inset-0 overflow-y-auto">
+                    <div
+                        class="flex min-h-full items-center justify-center p-4 text-center"
                     >
-                        <div class="fixed inset-0 bg-black/25"/>
-                    </TransitionChild>
-
-                    <div class="fixed inset-0 overflow-y-auto">
-                        <div
-                            class="flex min-h-full items-center justify-center p-4 text-center"
+                        <TransitionChild
+                            as="template"
+                            enter="duration-300 ease-out"
+                            enter-from="opacity-0 scale-95"
+                            enter-to="opacity-100 scale-100"
+                            leave="duration-200 ease-in"
+                            leave-from="opacity-100 scale-100"
+                            leave-to="opacity-0 scale-95"
                         >
-                            <TransitionChild
-                                as="template"
-                                enter="duration-300 ease-out"
-                                enter-from="opacity-0 scale-95"
-                                enter-to="opacity-100 scale-100"
-                                leave="duration-200 ease-in"
-                                leave-from="opacity-100 scale-100"
-                                leave-to="opacity-0 scale-95"
+                            <DialogPanel
+                                class="w-full max-w-md transform overflow-hidden rounded bg-white text-left align-middle shadow-xl transition-all"
                             >
-                                <DialogPanel
-                                    class="w-full max-w-md transform overflow-hidden rounded bg-white text-left align-middle shadow-xl transition-all"
+                                <DialogTitle
+                                    as="h3"
+                                    class="flex items-center justify-between py-3 px-4 font-medium bg-gray-100 text-gray-900"
                                 >
-                                    <DialogTitle
-                                        as="h3"
-                                        class="flex items-center justify-between py-3 px-4 font-medium bg-gray-100 text-gray-900"
-                                    >
-                                        {{ post.id ? 'Update Post' : 'Create Post' }}
-                                        <button @click="closeModal"
-                                        <button @click="show = false"
-                                                class="w-8 h-8 rounded-full hover:bg-black/5 transition flex items-center justify-center">
-                                            <XMarkIcon class="w-4 h-4"/>
-                                        </button>
-                                    </DialogTitle>
-                                    <div class="p-4">
-                                        <PostUserHeader :post="post" :show-time="false" class="mb-4"/>
-                                        <InputTextarea v-model="form.body" class="mb-3 w-full"></InputTextarea>
+                                    {{ post.id ? 'Update Post' : 'Create Post' }}
+                                    <button @click="closeModal"
+                                            class="w-8 h-8 rounded-full hover:bg-black/5 transition flex items-center justify-center">
+                                        <XMarkIcon class="w-4 h-4"/>
+                                    </button>
+                                </DialogTitle>
+                                <div class="p-4">
+                                    <PostUserHeader :post="post" :show-time="false" class="mb-4"/>
+                                    <InputTextarea v-model="form.body" class="mb-3 w-full" />
 
-                                            <div class="grid gap-3 my-3" :class="[
+                                    <div class="grid gap-3 my-3" :class="[
                                         computedAttachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
                                     ]">
-                                                <template v-for="(myFile, ind) of computedAttachments">
+                                        <template v-for="(myFile, ind) of computedAttachments">
+                                            <div
+                                                class="group aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-500 relative">
 
-                                                    <div
-                                                        class="group aspect-square bg-blue-100 flex flex-col items-center justify-center text-gray-500 relative">
+                                                <div v-if="myFile.deleted"
+                                                     class="absolute z-10 left-0 bottom-0 right-0 py-2 px-3 text-sm bg-black text-white flex justify-between items-center">
+                                                    To be deleted
 
-                                                        <div v-if="myFile.deleted" class="absolute z-10 left-0 bottom-0 right-0 py-2 px-3 text-sm bg-black text-white flex justify-between items-center">
-                                                            To be deleted
-                                                            <ArrowUturnLeftIcon @click="undoDelete(myFile)"  class="w-4 h-4 cursor-pointer" />
-                                                        </div>
+                                                    <ArrowUturnLeftIcon @click="undoDelete(myFile)"
+                                                                        class="w-4 h-4 cursor-pointer"/>
+                                                </div>
 
-                                                        <button
-                                                            @click="removeFile(myFile)"
-                                                            class="absolute z-20 right-3 top-3 w-7 h-7 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/40">
-                                                            <XMarkIcon class="h-5 w-5"/>
-                                                        </button>
+                                                <button
+                                                    @click="removeFile(myFile)"
+                                                    class="absolute z-20 right-3 top-3 w-7 h-7 flex items-center justify-center bg-black/30 text-white rounded-full hover:bg-black/40">
+                                                    <XMarkIcon class="h-5 w-5"/>
+                                                </button>
 
-                                                        <img v-if="isImage(myFile.file || myFile)"
-                                                             :src="myFile.url"
-                                                             class="object-contain aspect-square"
-                                                             :class="myFile.deleted ? 'opacity-50' : ''"/>
-                                                        <div v-else class="flex flex-col justify-center items-center"
-                                                             :class="myFile.deleted ? 'opacity-50' : ''">
-                                                            <PaperClipIcon class="w-10 h-10 mb-3"/>
+                                                <img v-if="isImage(myFile.file || myFile)"
+                                                     :src="myFile.url"
+                                                     class="object-contain aspect-square"
+                                                     :class="myFile.deleted ? 'opacity-50' : ''"/>
+                                                <div v-else class="flex flex-col justify-center items-center"
+                                                     :class="myFile.deleted ? 'opacity-50' : ''">
+                                                    <PaperClipIcon class="w-10 h-10 mb-3"/>
 
-                                                            <small class="text-center">
-                                                                {{ (myFile.file || myFile).name }}
-                                                            </small>
-                                                        </div>
-                                                    </div>
-                                                </template>
+                                                    <small class="text-center">
+                                                        {{ (myFile.file || myFile).name }}
+                                                    </small>
+                                                </div>
                                             </div>
+                                        </template>
+                                    </div>
 
-                                        </div>
+                                </div>
 
                                         <div class="flex gap-2 py-3 px-4">
                                             <button
