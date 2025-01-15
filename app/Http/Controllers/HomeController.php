@@ -36,7 +36,8 @@ class HomeController extends Controller
         }
 
         $groups = Group::query()
-            ->select(['groups.*', 'gu.status', 'gu.role'])
+            ->with('currentUserGroup')
+            ->select(['groups.*'])
             ->join('group_users AS gu', 'gu.group_id', 'groups.id')
             ->where('gu.user_id', Auth::id())
             ->orderBy('gu.role')
