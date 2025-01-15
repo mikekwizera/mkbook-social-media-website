@@ -63,24 +63,24 @@ function sendReaction() {
 
             <!--            Like & Comment buttons-->
 
-            <div class="flex gap-2">
+            <div class="mt-1 flex gap-2">
                 <button
                     @click="sendReaction"
-                    class="text-gray-800 flex gap-1 items-center justify-center  rounded-lg py-2 px-4 flex-1"
+                    class="flex items-center py-0.5 px-1 rounded-lg"
                     :class="[
                     post.current_user_has_reaction ?
-                     'bg-sky-100 hover:bg-sky-200' :
+                     'bg-sky-100 hover:bg-blue' :
                      'bg-gray-100  hover:bg-gray-200'
                 ]"
                 >
-                    <HandThumbUpIcon class="w-5 h-5"/>
+                    <HandThumbUpIcon class="w-3 h-3 mr-1"/>
                     <span class="mr-2">{{ post.num_of_reactions }}</span>
-                    {{ post.current_user_has_reaction ? 'Unlike' : 'Like' }}
+                    {{ post.current_user_has_reaction ? 'Like' : 'Like' }}
                 </button>
                 <DisclosureButton
-                    class="text-gray-800 flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 py-2 px-4 flex-1"
+                    class="flex items-center py-0.5 px-1 hover bg-gray-100 rounded-lg hover:bg-gray"
                 >
-                    <ChatBubbleLeftRightIcon class="w-5 h-5"/>
+                    <ChatBubbleLeftRightIcon class="w-5 h-5 rounded-lg"/>
                     <span class="mr-2">{{ post.num_of_comments }}</span>
                     Comment
                 </DisclosureButton>

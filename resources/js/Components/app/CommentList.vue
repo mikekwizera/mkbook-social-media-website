@@ -158,7 +158,7 @@ function onCommentDelete(comment) {
                             class="flex items-center text-xs text-indigo-500 py-0.5 px-1 hover:bg-indigo-100 rounded-lg">
                             <ChatBubbleLeftEllipsisIcon class="w-3 h-3 mr-1"/>
                             <span class="mr-2">{{ comment.num_of_comments }}</span>
-                            comments
+                            reply
                         </DisclosureButton>
                     </div>
                     <DisclosurePanel class="mt-3">
