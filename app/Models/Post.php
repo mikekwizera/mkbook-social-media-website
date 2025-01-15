@@ -29,7 +29,7 @@ class Post extends Model
 
     public function reactions(): HasMany
     {
-        return $this->hasMany(PostReaction::class);
+        return $this->hasMany(Reaction::class);
     }
 
     public function comments(): HasMany

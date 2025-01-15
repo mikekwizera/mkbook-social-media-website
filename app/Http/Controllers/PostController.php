@@ -1,14 +1,15 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Http\Enums\PostReactionEnum;
+use App\Http\Enums\ReactionEnum;
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostAttachment;
-use App\Models\PostReaction;
+use App\Models\Reaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -125,22 +126,22 @@ class PostController extends Controller
     public function postReaction(Request $request, Post $post)
     {
         $data = $request->validate([
-            'reaction' => [Rule::enum(PostReactionEnum::class)]
+            'reaction' => [Rule::enum(ReactionEnum::class)]
         ]);
         $userId = Auth::id();
-        $reaction = PostReaction::where('user_id', $userId)->where('post_id', $post->id)->first();
+        $reaction = Reaction::where('user_id', $userId)->where('post_id', $post->id)->first();
         if ($reaction) {
             $hasReaction = false;
             $reaction->delete();
         } else {
             $hasReaction = true;
-            PostReaction::create([
+            Reaction::create([
                 'post_id' => $post->id,
                 'user_id' => $userId,
                 'type' => $data['reaction']
             ]);
         }
-        $reactions = PostReaction::where('post_id', $post->id)->count();
+        $reactions = Reaction::where('post_id', $post->id)->count();
         return response([
             'num_of_reactions' => $reactions,
             'current_user_has_reaction' => $hasReaction
@@ -158,5 +159,22 @@ class PostController extends Controller
             'user_id' => Auth::id()
         ]);
         return response(new CommentResource($comment), 201);
+    }
+
+    public function deleteComment(Comment $comment)
+    {
+        if ($comment->user_id !== Auth::id()) {
+            return response("You don't have permission to delete this comment.", 403);
+        }
+        $comment->delete();
+        return response('', 204);
+    }
+    public function updateComment(UpdateCommentRequest $request, Comment $comment)
+    {
+        $data = $request->validated();
+        $comment->update([
+            'comment' => nl2br($data['comment'])
+        ]);
+        return new CommentResource($comment);
     }
 }
