@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 class UpdateGroupRequest extends FormRequest
 {
     /**
@@ -10,7 +11,10 @@ class UpdateGroupRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        /** @var \App\Models\Group $group */
+        $group = $this->route('group');
+
+        return $group->isAdmin(Auth::id());
     }
     /**
      * Get the validation rules that apply to the request.
@@ -20,7 +24,9 @@ class UpdateGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'max:255'],
+            'auto_approval' => ['required', 'boolean'],
+            'about' => ['nullable']
         ];
     }
 }

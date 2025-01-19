@@ -53,6 +53,7 @@ class GroupController extends Controller
             'requests' => UserResource::collection($requests)
         ]);
     }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -61,6 +62,7 @@ class GroupController extends Controller
         $data = $request->validated();
         $data['user_id'] = Auth::id();
         $group = Group::create($data);
+
         $groupUserData = [
             'status' => GroupUserStatus::APPROVED->value,
             'role' => GroupUserRole::ADMIN->value,
@@ -68,25 +70,22 @@ class GroupController extends Controller
             'group_id' => $group->id,
             'created_by' => Auth::id()
         ];
+
         GroupUser::create($groupUserData);
         $group->status = $groupUserData['status'];
         $group->role = $groupUserData['role'];
 
         return response(new GroupResource($group), 201);
     }
-    /**
-     * Display the specified resource.
-     */
-    public function show(Group $group)
-    {
-        //
-    }
+
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdateGroupRequest $request, Group $group)
     {
-        //
+        $group->update($request->validated());
+
+        return back()->with('success', "Group was updated");
     }
     /**
      * Remove the specified resource from storage.
@@ -105,9 +104,11 @@ class GroupController extends Controller
             'cover' => ['nullable', 'image'],
             'thumbnail' => ['nullable', 'image']
         ]);
+
         $thumbnail = $data['thumbnail'] ?? null;
         /** @var \Illuminate\Http\UploadedFile $cover */
         $cover = $data['cover'] ?? null;
+
         $success = '';
         if ($cover) {
             if ($group->cover_path) {
@@ -117,6 +118,7 @@ class GroupController extends Controller
             $group->update(['cover_path' => $path]);
             $success = 'Your cover image was updated';
         }
+
         if ($thumbnail) {
             if ($group->thumbnail_path) {
                 Storage::disk('public')->delete($group->thumbnail_path);
@@ -125,21 +127,27 @@ class GroupController extends Controller
             $group->update(['thumbnail_path' => $path]);
             $success = 'Your thumbnail image was updated';
         }
+
 //        session('success', 'Cover image has been updated');
+
         return back()->with('success', $success);
     }
-
 
     public function inviteUsers(InviteUsersRequest $request, Group $group)
     {
         $data = $request->validated();
+
         $user = $request->user;
+
         $groupUser = $request->groupUser;
+
         if ($groupUser) {
             $groupUser->delete();
         }
+
         $hours = 24;
         $token = Str::random(256);
+
         GroupUser::create([
             'status' => GroupUserStatus::PENDING->value,
             'role' => GroupUserRole::USER->value,
@@ -149,14 +157,19 @@ class GroupController extends Controller
             'group_id' => $group->id,
             'created_by' => Auth::id(),
         ]);
+
         $user->notify(new InvitationInGroup($group, $hours, $token));
+
+
         return back()->with('success', 'User was invited to join to group');
     }
+
     public function approveInvitation(string $token)
     {
         $groupUser = GroupUser::query()
             ->where('token', $token)
             ->first();
+
         $errorTitle = '';
         if (!$groupUser) {
             $errorTitle = 'The link is not valid';
@@ -165,9 +178,11 @@ class GroupController extends Controller
         } else if ($groupUser->token_expire_date < Carbon::now()) {
             $errorTitle = 'The link is expired';
         }
+
         if ($errorTitle) {
             return \inertia('Error', compact('errorTitle'));
         }
+
         $groupUser->status = GroupUserStatus::APPROVED->value;
         $groupUser->token_used = Carbon::now();
         $groupUser->save();
