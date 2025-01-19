@@ -85,7 +85,7 @@ function sendReaction() {
                     Comment
                 </DisclosureButton>
             </div>
-            <DisclosurePanel class="comment-list mt-3 h-[400px] overflow-auto">
+            <DisclosurePanel class="comment-list mt-3 max-h-[400px] overflow-auto">
                 <CommentList :post="post" :data="{comments: post.comments}"/>
             </DisclosurePanel>
         </Disclosure>
