@@ -32,6 +32,7 @@ use Illuminate\Validation\Rules\Enum;
 use Inertia\Inertia;
 use PhpParser\Node\Stmt\GroupUse;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+
 class GroupController extends Controller
 {
     /**
@@ -42,6 +43,7 @@ class GroupController extends Controller
         $group->load('currentUserGroup');
 
         $userId = Auth::id();
+
         if ($group->hasApprovedUser($userId)) {
             $posts = Post::postsForTimeline($userId)
                 ->where('group_id', $group->id)
@@ -56,6 +58,7 @@ class GroupController extends Controller
                 'requests' => []
             ]);
         }
+
         if ($request->wantsJson()) {
             return PostResource::collection($posts);
         }
@@ -110,6 +113,7 @@ class GroupController extends Controller
 
         return back()->with('success', "Group was updated");
     }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -209,22 +213,28 @@ class GroupController extends Controller
         $groupUser->status = GroupUserStatus::APPROVED->value;
         $groupUser->token_used = Carbon::now();
         $groupUser->save();
+
         $adminUser = $groupUser->adminUser;
+
         $adminUser->notify(new InvitationApproved($groupUser->group, $groupUser->user));
 
         return redirect(route('group.profile', $groupUser->group))
             ->with('success', 'You accepted to join to group "' . $groupUser->group->name . '"');
     }
+
     public function join(Group $group)
     {
         $user = \request()->user();
+
         $status = GroupUserStatus::APPROVED->value;
         $successMessage = 'You have joined to group "' . $group->name . '"';
         if (!$group->auto_approval) {
             $status = GroupUserStatus::PENDING->value;
+
             Notification::send($group->adminUsers, new RequestToJoinGroup($group, $user));
             $successMessage = 'Your request has been accepted. You will be notified once you will be approved';
         }
+
         GroupUser::create([
             'status' => $status,
             'role' => GroupUserRole::USER->value,
@@ -232,6 +242,7 @@ class GroupController extends Controller
             'group_id' => $group->id,
             'created_by' => $user->id,
         ]);
+
         return back()->with('success', $successMessage);
     }
 
@@ -240,14 +251,17 @@ class GroupController extends Controller
         if (!$group->isAdmin(Auth::id())) {
             return response("You don't have permission to perform this action", 403);
         }
+
         $data = $request->validate([
             'user_id' => ['required'],
             'action' => ['required']
         ]);
+
         $groupUser = GroupUser::where('user_id', $data['user_id'])
             ->where('group_id', $group->id)
             ->where('status', GroupUserStatus::PENDING->value)
             ->first();
+
         if ($groupUser) {
             $approved = false;
             if ($data['action'] === 'approve') {
@@ -257,13 +271,16 @@ class GroupController extends Controller
                 $groupUser->status = GroupUserStatus::REJECTED->value;
             }
             $groupUser->save();
+
             $user = $groupUser->user;
             $user->notify(new RequestApproved($groupUser->group, $user, $approved));
+
             return back()->with('success', 'User "' . $user->name . '" was ' . ( $approved ? 'approved' : 'rejected' ));
         }
 
         return back();
     }
+
     public function removeUser(Request $request, Group $group)
     {
         if (!$group->isAdmin(Auth::id())) {
@@ -291,23 +308,28 @@ class GroupController extends Controller
         if (!$group->isAdmin(Auth::id())) {
             return response("You don't have permission to perform this action", 403);
         }
+
         $data = $request->validate([
             'user_id' => ['required'],
             'role' => ['required', Rule::enum(GroupUserRole::class)]
         ]);
+
         $user_id = $data['user_id'];
         if ($group->isOwner($user_id)) {
             return response("You can't change role of the owner of the group", 403);
         }
+
         $groupUser = GroupUser::where('user_id', $user_id)
             ->where('group_id', $group->id)
             ->first();
+
         if ($groupUser) {
             $groupUser->role = $data['role'];
             $groupUser->save();
-            $groupUser->user->notify(new RoleChanged($group, $data['role']));
-        }
 
+            $groupUser->user->notify(new RoleChanged($group, $data['role']));
+
+        }
         return back();
     }
 }

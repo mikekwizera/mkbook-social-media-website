@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class GroupUser extends Model
 {
     use HasFactory;
+
     const UPDATED_AT = null;
+
     protected $fillable = [
         'status',
         'role',
@@ -19,8 +21,6 @@ class GroupUser extends Model
         'token',
         'token_expire_date',
     ];
-
-
     public function adminUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

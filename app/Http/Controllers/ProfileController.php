@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Follower;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
@@ -16,15 +17,19 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
     public function index(User $user)
     {
+        $isCurrentUserFollower = false;
+        if (!Auth::guest()) {
+            $isCurrentUserFollower = Follower::where('user_id', $user->id)->where('follower_id', Auth::id())->exists();
+        }
+        $followerCount = Follower::where('user_id', $user->id)->count();
         return Inertia::render('Profile/View', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
             'success' => session('success'),
+            'isCurrentUserFollower' => $isCurrentUserFollower,
+            'followerCount' => $followerCount,
             'user' => new UserResource($user)
         ]);
     }
@@ -65,13 +70,16 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
     public function updateImage(Request $request)
     {
         $data = $request->validate([
             'cover' => ['nullable', 'image'],
             'avatar' => ['nullable', 'image']
         ]);
+
         $user = $request->user();
+
         $avatar = $data['avatar'] ?? null;
         /** @var \Illuminate\Http\UploadedFile $cover */
         $cover = $data['cover'] ?? null;
@@ -94,7 +102,9 @@ class ProfileController extends Controller
             $user->update(['avatar_path' => $path]);
             $success = 'Your avatar image was updated';
         }
+
 //        session('success', 'Cover image has been updated');
+
         return back()->with('success', $success);
     }
 }
