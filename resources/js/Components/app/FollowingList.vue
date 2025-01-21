@@ -2,6 +2,11 @@
 import FollowingListItems from "@/Components/app/FollowingListItems.vue";
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
 import GroupListItems from "@/Components/app/GroupListItems.vue";
+
+defineProps({
+    users: Array
+})
+
 </script>
 <template>
     <div class="px-3 bg-white rounded border h-full py-3 overflow-hidden">
@@ -18,13 +23,13 @@ import GroupListItems from "@/Components/app/GroupListItems.vue";
                     </div>
                 </DisclosureButton>
                 <DisclosurePanel>
-                    <FollowingListItems/>
+                    <FollowingListItems :users="users"/>
                 </DisclosurePanel>
             </Disclosure>
         </div>
         <div class="h-full overflow-hidden flex-col hidden lg:flex">
             <h2 class="text-xl font-bold">My Followings</h2>
-            <FollowingListItems/>
+             <FollowingListItems :users="users"/>
         </div>
     </div>
 </template>
