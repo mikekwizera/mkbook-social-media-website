@@ -6,13 +6,14 @@ import {usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import {useForm} from '@inertiajs/vue3'
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import InviteUserModal from "@/Pages/Group/InviteUserModal.vue";
 import UserListItem from "@/Components/app/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
 import GroupForm from "@/Components/app/GroupForm.vue";
 import PostList from "@/Components/app/PostList.vue";
 import CreatePost from "@/Components/app/CreatePost.vue";
+import IndigoButton from "@/Components/app/IndigoButton.vue";
+import GrayButton from "@/Components/app/GrayButton.vue";
 const imagesForm = useForm({
     thumbnail: null,
     cover: null,
@@ -164,12 +165,12 @@ function updateGroup() {
                     {{ errors.cover }}
                 </div>
                 <div class="group relative bg-white">
-                    <img :src="coverImageSrc || group.cover_url || '/img/default_cover.jpg'"
+                    <img :src="coverImageSrc || group.cover_url || '/img/default-cover.jpg'"
                          class="w-full h-[200px] object-cover">
                     <div v-if="isCurrentUserAdmin" class="absolute top-2 right-2 ">
                         <button
                             v-if="!coverImageSrc"
-                            class="bg-gray-50 hover:bg-gray-100 text-gray-800 py-1 px-2 text-xs flex items-center opacity-0 group-hover:opacity-100">
+                            class="bg-gray-50 hover:bg-gray-100 text-gray-800 rounded py-2 px-3 text-xs flex items-center opacity-0 group-hover:opacity-100">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                                  stroke="currentColor" class="w-3 h-3 mr-2">
                                 <path stroke-linecap="round" stroke-linejoin="round"
@@ -178,7 +179,7 @@ function updateGroup() {
                                       d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
                             </svg>
 
-                            Update Cover Image
+
                             <input type="file" class="absolute left-0 top-0 bottom-0 right-0 opacity-0"
                                    @change="onCoverChange"/>
                         </button>
@@ -201,7 +202,7 @@ function updateGroup() {
                     <div class="flex">
                         <div
                             class="flex items-center justify-center relative group/thumbnail -mt-[64px] ml-[48px] w-[128px] h-[128px] rounded-full">
-                            <img :src="thumbnailImageSrc || group.thumbnail_url || '/img/default_avatar.webp'"
+                            <img :src="thumbnailImageSrc || group.thumbnail_url || '/img/default_avatar.jpg'"
                                  class="w-full h-full object-cover rounded-full">
                             <button
                                 v-if="isCurrentUserAdmin && !thumbnailImageSrc"
@@ -228,22 +229,22 @@ function updateGroup() {
                         <div class="flex justify-between items-center flex-1 p-4">
                             <h2 class="font-bold text-lg">{{ group.name }}</h2>
 
-                            <PrimaryButton v-if="!authUser" :href="route('login')">
+                            <indigo-button v-if="!authUser" :href="route('login')">
                                 Login to join to this group
-                            </PrimaryButton>
+                            </indigo-button>
 
-                            <PrimaryButton v-if="isCurrentUserAdmin"
+                            <indigo-button v-if="isCurrentUserAdmin"
                                            @click="showInviteUserModal = true">
                                 Invite Users
-                            </PrimaryButton>
-                            <PrimaryButton v-if="authUser && !group.role && group.auto_approval"
+                            </indigo-button>
+                            <indigo-button v-if="authUser && !group.role && group.auto_approval"
                                            @click="joinToGroup">
                                 Join to Group
-                            </PrimaryButton>
-                            <PrimaryButton v-if="authUser && !group.role && !group.auto_approval"
+                            </indigo-button>
+                            <indigo-button v-if="authUser && !group.role && !group.auto_approval"
                                            @click="joinToGroup">
                                 Request to join
-                            </PrimaryButton>
+                            </indigo-button>
                         </div>
                     </div>
                 </div>
@@ -316,9 +317,9 @@ function updateGroup() {
                         <TabPanel class="bg-white p-3 shadow">
                             <template v-if="isCurrentUserAdmin">
                                 <GroupForm :form="aboutForm"/>
-                                <PrimaryButton @click="updateGroup">
-                                    Submit
-                                </PrimaryButton>
+                                <gray-button @click="updateGroup">
+                                    Save
+                                </gray-button>
                             </template>
                             <div v-else class="ck-content-output" v-html="group.about">
                             </div>

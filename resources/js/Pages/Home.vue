@@ -18,10 +18,10 @@ defineProps({
 
             <AuthenticatedLayout>
                 <div class="grid lg:grid-cols-12 gap-3 p-4 h-full">
-                    <div class="lg:col-span-3 lg:order-1 h-full overflow-hidden">
+                    <div class="lg:col-span-3 lg:order-3 h-full overflow-hidden">
                         <GroupList :groups="groups"/>
                     </div>
-                    <div class="lg:col-span-3 lg:order-3 h-full overflow-hidden">
+                    <div class="lg:col-span-3 lg:order-1 h-full overflow-hidden">
                         <FollowingList/>
                     </div>
                     <div class="lg:col-span-6 lg:order-2 h-full overflow-hidden flex flex-col">

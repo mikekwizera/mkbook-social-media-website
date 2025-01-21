@@ -6,13 +6,13 @@ import {usePage} from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
 import Edit from "@/Pages/Profile/Edit.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {useForm} from '@inertiajs/vue3'
-import DangerButton from "@/Components/DangerButton.vue";
 import CreatePost from "@/Components/app/CreatePost.vue";
 import PostList from "@/Components/app/PostList.vue";
 import UserListItem from "@/Components/app/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
+import IndigoButton from "@/Components/app/IndigoButton.vue";
+import GrayButton from "@/Components/app/GrayButton.vue";
 const imagesForm = useForm({
     avatar: null,
     cover: null,
@@ -124,7 +124,7 @@ function followUser() {
                         </div>
 
                                 <div class="group relative bg-white">
-                                    <img :src="coverImageSrc || user.cover_url || '/img/default_cover.jpg'"
+                                    <img :src="coverImageSrc || user.cover_url || '/img/default-cover.jpg'"
                                          class="w-full h-[200px] object-cover">
                                     <div class="absolute top-2 right-2 ">
                                         <button
@@ -138,7 +138,6 @@ function followUser() {
                                                       d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z"/>
                                             </svg>
 
-                                            Update Cover Image
                                             <input type="file" class="absolute left-0 top-0 bottom-0 right-0 opacity-0"
                                             @change="onCoverChange"/>
                                         </button>
@@ -160,7 +159,7 @@ function followUser() {
                                                 <div class="flex">
                                                     <div
                                                         class="flex items-center justify-center relative group/avatar -mt-[64px] ml-[48px] w-[128px] h-[128px] rounded-full">
-                                                        <img :src="avatarImageSrc || user.avatar_url || '/img/default_avatar.webp'"
+                                                        <img :src="avatarImageSrc || user.avatar_url || '/img/default_avatar.jpg'"
                                                              class="w-full h-full object-cover rounded-full">
                                                         <button
                                                             v-if="!avatarImageSrc"
@@ -183,33 +182,21 @@ function followUser() {
                                                         </div>
                                                     </div>
 
-
                                                     <div class="flex justify-between items-center flex-1 pl-3">
-
                                                         <div>
-
                                                            <h2 class="font-bold text-lg">{{ user.name }}</h2>
-
                                                             <div class="flex justify-between items-center" >
                                                                 <p class="text-xs text-gray-500">{{ followerCount }} followers</p>
-
-                                                                <p class="text-xs text-gray-500 p-3">following</p>
                                                             </div>
-
-
                                                         </div>
 
-
-
-
-
-                                                            <div v-if="authUser.id !== user.id">
-                                                                <PrimaryButton v-if="!isCurrentUserFollower" @click="followUser">
+                                                            <div v-if="authUser.id !== user.id" class="pr-3">
+                                                                <indigo-button v-if="!isCurrentUserFollower" @click="followUser">
                                                                     Follow
-                                                                </PrimaryButton>
-                                                                <DangerButton v-else @click="followUser">
+                                                                </indigo-button>
+                                                                <gray-button v-else @click="followUser">
                                                                     Unfollow
-                                                                </DangerButton>
+                                                                </gray-button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -222,13 +209,13 @@ function followUser() {
                                                                 <TabItem text="Posts" :selected="selected"/>
                                                             </Tab>
                                                             <Tab v-slot="{ selected }" as="template">
-                                                                <TabItem text="Followers" :selected="selected"/>
-                                                            </Tab>
-                                                            <Tab v-slot="{ selected }" as="template">
-                                                                <TabItem text="Followings" :selected="selected"/>
-                                                            </Tab>
-                                                            <Tab v-slot="{ selected }" as="template">
                                                                 <TabItem text="Photos" :selected="selected"/>
+                                                            </Tab>
+                                                            <Tab v-slot="{ selected }" as="template">
+                                                                <TabItem text="followers" :selected="selected"/>
+                                                            </Tab>
+                                                            <Tab v-slot="{ selected }" as="template">
+                                                                <TabItem text="following" :selected="selected"/>
                                                             </Tab>
                                                             <Tab v-if="isMyProfile" v-slot="{ selected }" as="template">
                                                                 <TabItem text="My Profile" :selected="selected"/>
@@ -245,6 +232,9 @@ function followUser() {
                                                                         You don't have permission to view these posts.
                                                                     </div>
                                                                 </TabPanel>
+                                                            <TabPanel>
+                                                                Photos
+                                                            </TabPanel>
 
                                                                     <TabPanel>
                                                                         <div class="mb-3">
@@ -277,9 +267,6 @@ function followUser() {
                                                                                 The user is not following to anybody
                                                                             </div>
                                                                         </TabPanel>
-                                                                            <TabPanel>
-                                                                                Photos
-                                                                            </TabPanel>
                                                                             <TabPanel v-if="isMyProfile">
                                                                                 <Edit :must-verify-email="mustVerifyEmail" :status="status"/>
                                                                             </TabPanel>

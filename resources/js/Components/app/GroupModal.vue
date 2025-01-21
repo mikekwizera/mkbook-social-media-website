@@ -95,18 +95,12 @@ function submit() {
                                 </div>
                                 <div class="flex justify-end gap-2 py-3 px-4">
                                     <button
-                                        class="text-gray-800 flex gap-1 items-center justify-center bg-gray-100 rounded-md hover:bg-gray-200 py-2 px-4"
-                                    >
-                                        <XMarkIcon class="w-5 h-5"/>
-                                        Cancel
-                                    </button>
-                                    <button
                                         type="button"
-                                        class="flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                        class="flex items-center justify-center rounded-md bg-indigo-600 px-2 py-1 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
                                         @click="submit"
                                     >
                                         <BookmarkIcon class="w-4 h-4 mr-2"/>
-                                        Submit
+                                        Save
                                     </button>
                                 </div>
                             </DialogPanel>
