@@ -13,6 +13,9 @@ import UserListItem from "@/Components/app/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
 import IndigoButton from "@/Components/app/IndigoButton.vue";
 import GrayButton from "@/Components/app/GrayButton.vue";
+import PostAttachments from "@/Components/app/PostAttachments.vue";
+import TabPhotos from "@/Pages/Profile/TabPhotos.vue";
+
 const imagesForm = useForm({
     avatar: null,
     cover: null,
@@ -43,6 +46,7 @@ const props = defineProps({
     posts: Object,
     followers: Array,
     followings: Array,
+    photos: Array
 });
 function onCoverChange(event) {
     imagesForm.cover = event.target.files[0]
@@ -233,7 +237,7 @@ function followUser() {
                                                                     </div>
                                                                 </TabPanel>
                                                             <TabPanel>
-                                                                Photos
+                                                                <TabPhotos :photos="photos" />
                                                             </TabPanel>
 
                                                                     <TabPanel>
