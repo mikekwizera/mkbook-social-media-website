@@ -191,7 +191,6 @@ function fetchPreview(url) {
     }
 }
 function onInputChange() {
-    console.log("222222222")
     let url = matchHref()
     if (!url) {
         url = matchLink()
