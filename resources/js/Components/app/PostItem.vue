@@ -1,23 +1,30 @@
 <script setup>
-
 import {ChatBubbleLeftRightIcon, HandThumbUpIcon} from '@heroicons/vue/24/outline'
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import {router, usePage} from '@inertiajs/vue3'
-import {isImage} from '@/helpers.js'
 import axiosClient from "@/axiosClient.js";
 import ReadMoreReadLess from "@/Components/app/ReadMoreReadLess.vue";
 import EditDeleteDropdown from "@/Components/app/EditDeleteDropdown.vue";
 import PostAttachments from "@/Components/app/PostAttachments.vue";
 import CommentList from "@/Components/app/CommentList.vue";
-
-
+import {computed} from "vue";
+import UrlPreview from "@/Components/app/UrlPreview.vue";
 const props = defineProps({
     post: Object
 })
-
-
 const emit = defineEmits(['editClick', 'attachmentClick'])
+
+const postBody = computed(() => {
+    let content = props.post.body.replace(
+        /(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/g,
+        (match, group1, group2) => {
+            const encodedGroup = encodeURIComponent(group2);
+            return `${group1 || ''}<a href="/search/${encodedGroup}" class="hashtag">${group2}</a>`;
+        }
+    )
+    return content;
+})
 function openEditModal() {
     emit('editClick', props.post)
 }
@@ -28,11 +35,9 @@ function deletePost() {
         })
     }
 }
-
 function openAttachment(ind) {
     emit('attachmentClick', props.post, ind)
 }
-
 function sendReaction() {
     axiosClient.post(route('post.reaction', props.post), {
         reaction: 'like'
@@ -42,7 +47,6 @@ function sendReaction() {
             props.post.num_of_reactions = data.num_of_reactions;
         })
 }
-
 </script>
 
 <template>
@@ -52,43 +56,43 @@ function sendReaction() {
             <EditDeleteDropdown :user="post.user" :post="post" @edit="openEditModal" @delete="deletePost"/>
         </div>
         <div class="mb-3">
-            <ReadMoreReadLess :content="post.body"/>
+            <ReadMoreReadLess :content="postBody"/>
+            <UrlPreview :preview="post.preview" :url="post.preview_url"/>
         </div>
-                <div class="grid gap-3 mb-3" :class="[
+        <div class="grid gap-3 mb-3" :class="[
             post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
         ]">
-                    <PostAttachments :attachments="post.attachments" @attachmentClick="openAttachment"/>
-                </div>
+            <PostAttachments :attachments="post.attachments" @attachmentClick="openAttachment"/>
+        </div>
         <Disclosure v-slot="{ open }">
-
             <!--            Like & Comment buttons-->
-
-            <div class="mt-1 flex gap-2">
+            <div class="flex gap-2">
                 <button
                     @click="sendReaction"
-                    class="flex items-center py-0.5 px-1 rounded-lg"
+                    class="text-gray-800 flex gap-1 items-center justify-center  rounded-lg py-2 px-4 flex-1"
                     :class="[
                     post.current_user_has_reaction ?
-                     'bg-sky-100 hover:bg-blue' :
+                     'bg-sky-100 hover:bg-sky-200' :
                      'bg-gray-100  hover:bg-gray-200'
                 ]"
                 >
-                    <HandThumbUpIcon class="w-3 h-3 mr-1"/>
+                    <HandThumbUpIcon class="w-5 h-5"/>
                     <span class="mr-2">{{ post.num_of_reactions }}</span>
-                    {{ post.current_user_has_reaction ? 'Like' : 'Like' }}
+                    {{ post.current_user_has_reaction ? 'Unlike' : 'Like' }}
                 </button>
                 <DisclosureButton
-                    class="flex items-center py-0.5 px-1 hover bg-gray-100 rounded-lg hover:bg-gray"
+                    class="text-gray-800 flex gap-1 items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 py-2 px-4 flex-1"
                 >
-                    <ChatBubbleLeftRightIcon class="w-5 h-5 rounded-lg"/>
+                    <ChatBubbleLeftRightIcon class="w-5 h-5"/>
                     <span class="mr-2">{{ post.num_of_comments }}</span>
                     Comment
                 </DisclosureButton>
             </div>
+
             <DisclosurePanel class="comment-list mt-3 max-h-[400px] overflow-auto">
                 <CommentList :post="post" :data="{comments: post.comments}"/>
             </DisclosurePanel>
         </Disclosure>
-        </div>
-</template>
 
+    </div>
+</template>

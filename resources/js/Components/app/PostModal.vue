@@ -11,8 +11,11 @@ import {
 
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import {useForm, usePage} from "@inertiajs/vue3";
-import {isImage} from "@/helpers.js";
 import InputTextarea from "@/Components/InputTextarea.vue";
+import {isImage} from "@/helpers.js";
+import axiosClient from "@/axiosClient.js";
+import UrlPreview from "@/Components/app/UrlPreview.vue";
+
 
 const props = defineProps({
     post: {
@@ -43,6 +46,8 @@ const form = useForm({
     group_id: null,
     attachments: [],
     deleted_file_ids: [],
+    preview: {},
+    preview_url: null,
     _method: 'POST'
 })
 const show = computed({
@@ -66,6 +71,7 @@ const showExtensionsText = computed(() => {
 const emit = defineEmits(['update:modelValue', 'hide'])
 watch(() => props.post, () => {
     form.body = props.post.body || ''
+    onInputChange();
 })
 
 function closeModal() {
@@ -163,6 +169,58 @@ function undoDelete(myFile) {
     myFile.deleted = false;
     form.deleted_file_ids = form.deleted_file_ids.filter(id => myFile.id !== id)
 }
+
+function fetchPreview(url) {
+    if (url === form.preview_url) {
+        return;
+    }
+    form.preview_url = url
+    form.preview = {}
+    if (url) {
+        axiosClient.post(route('post.fetchUrlPreview'), {url})
+            .then(({data}) => {
+                form.preview = {
+                    title: data['og:title'],
+                    description: data['og:description'],
+                    image: data['og:image']
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+}
+function onInputChange() {
+    console.log("222222222")
+    let url = matchHref()
+    if (!url) {
+        url = matchLink()
+    }
+    fetchPreview(url)
+}
+function matchHref() {
+    // Regular expression to match URLs
+    const urlRegex = /<a.+href="((https?):\/\/[^"]+)"/;
+    // Match the first URL in the HTML content
+    const match = form.body.match(urlRegex);
+    // Check if a match is found
+    if (match && match.length > 0) {
+        return match[1];
+    }
+    return null;
+}
+function matchLink() {
+    // Regular expression to match URLs
+    const urlRegex = /(?:https?):\/\/[^\s<]+/;
+    // Match the first URL in the HTML content
+    const match = form.body.match(urlRegex);
+    // Check if a match is found
+    if (match && match.length > 0) {
+        return match[0];
+    }
+    return null
+}
+
 </script>
 
 <template>
@@ -212,7 +270,9 @@ function undoDelete(myFile) {
                                     <div v-if="formErrors.group_id" class="bg-red-400 py-2 px-3 rounded text-white mb-3">
                                         {{formErrors.group_id}}
                                     </div>
-                                    <InputTextarea v-model="form.body" class="mb-3 w-full" />
+                                    <InputTextarea v-model="form.body" class="mb-3 w-full" @input="onInputChange"/>
+
+                                    <UrlPreview :preview="form.preview" :url="form.preview_url" />
 
                                     <div v-if="showExtensionsText" class="border-l-4 border-amber-500 py-2 px-3 bg-amber-100 mt-3 text-gray-800">
                                         Files must be one of the following extensions <br>
