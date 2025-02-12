@@ -1,10 +1,11 @@
 <script setup>
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link, router, usePage} from '@inertiajs/vue3';
+import {MoonIcon} from '@heroicons/vue/24/solid'
 
 const showingNavigationDropdown = ref(false);
 const keywords = ref(usePage().props.search || '')
@@ -12,7 +13,18 @@ const keywords = ref(usePage().props.search || '')
 const authUser = usePage().props.auth.user;
 
 function search() {
-    router.get(route('search', keywords.value))
+    router.get(route('search', encodeURIComponent(keywords.value)))
+}
+
+function toggleDarkMode(){
+    const html = window.document.documentElement
+    if (html.classList.contains('dark')) {
+        html.classList.remove('dark')
+        localStorage.setItem('darkMode', '0')
+    } else {
+        html.classList.add('dark')
+        localStorage.setItem('darkMode', '1')
+    }
 }
 </script>
 
@@ -57,6 +69,11 @@ function search() {
                                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-black hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
                                                 <!-- {{ authUser.name }} -->
+
+                                                <button @click="toggleDarkMode" class="dark:text-white mr-3">
+                                                  <MoonIcon class="w-5 h-5"/>
+                                                </button>
+
                                                     <Link :href="route('profile', authUser.username)">
                                                        <img :src="authUser.avatar_url"
                                                          class="w-[25px] border border-2 transition-all hover:border-blue-700 rounded-full"/>
@@ -88,7 +105,7 @@ function search() {
                                     </template>
                                 </Dropdown>
                                 <div v-else>
-                                    <Link :href="route('login')">
+                                    <Link :href="route('login')" class="dark:text-gray-100">
                                         Login
                                     </Link>
                                 </div>
