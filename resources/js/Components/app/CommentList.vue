@@ -1,6 +1,6 @@
 <script setup>
 
-import {ChatBubbleLeftEllipsisIcon, HandThumbUpIcon} from "@heroicons/vue/24/outline/index.js";
+import {ChatBubbleLeftEllipsisIcon, HandThumbUpIcon, PaperAirplaneIcon} from "@heroicons/vue/24/outline/index.js";
 import ReadMoreReadLess from "@/Components/app/ReadMoreReadLess.vue";
 import IndigoButton from "@/Components/app/IndigoButton.vue";
 import InputTextarea from "@/Components/InputTextarea.vue";
@@ -106,7 +106,9 @@ function onCommentDelete(comment) {
         <div class="flex flex-1">
             <InputTextarea v-model="newCommentText" placeholder="Enter your comment here" rows="1"
                            class="w-full max-h-[160px] resize-none rounded-r-none"></InputTextarea>
-            <IndigoButton @click="createComment" class="rounded-l-none w-[100px] ">Submit</IndigoButton>
+            <IndigoButton @click="createComment" class="rounded-l-none w-[100px] ">
+                <PaperAirplaneIcon class="w-6 h-6"/>
+            </IndigoButton>
         </div>
     </div>
     <div>
