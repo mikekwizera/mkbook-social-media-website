@@ -17,16 +17,16 @@ defineProps({
     <div class="flex items-center gap-2 ">
         <Link :href="route('profile', post.user.username)">
             <img :src="post.user.avatar_url"
-                 class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500"/>
+                 class="w-[30px] rounded-full border border-2 transition-all hover:border-blue-500"/>
         </Link>
         <div>
             <h4 class="flex items-center font-bold">
-                <Link :href="route('profile', post.user.username)" class="hover:underline">
+                <Link :href="route('profile', post.user.username)" class="hover:underline pt-3">
                     {{ post.user.name }}
                 </Link>
                 <template v-if="post.group">
-                    <ChevronRightIcon class="w-4"/>
-                    <Link :href="route('group.profile', post.group.slug)" class="hover:underline">
+                    <ChevronRightIcon class="w-4 pt-3"/>
+                    <Link :href="route('group.profile', post.group.slug)" class="hover:underline pt-3">
                         {{ post.group.name }}
                     </Link>
                 </template>

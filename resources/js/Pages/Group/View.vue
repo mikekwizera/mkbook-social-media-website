@@ -164,7 +164,7 @@ function updateGroup() {
                 >
                     {{ errors.cover }}
                 </div>
-                <div class="group relative bg-white">
+                <div class="group relative bg-white dark:bg-black dark:text-gray-100">
                     <img :src="coverImageSrc || group.cover_url || '/img/default-cover.jpg'"
                          class="w-full h-[200px] object-cover">
                     <div v-if="isCurrentUserAdmin" class="absolute top-2 right-2 ">
@@ -249,9 +249,9 @@ function updateGroup() {
                     </div>
                 </div>
             </div>
-            <div class="border-t p-4 pt-0">
+            <div class="border-t m-4 pt-0">
                 <TabGroup>
-                    <TabList class="flex bg-white">
+                    <TabList class="flex bg-white dark:bg-black dark:text-white">
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
@@ -274,11 +274,11 @@ function updateGroup() {
                             <template v-if="posts">
                                 <CreatePost :group="group"/>
                                 <PostList v-if="posts.data.length" :posts="posts.data" class="flex-1"/>
-                                <div v-else class="py-8 text-center">
+                                <div v-else class="py-8 text-center dark:text-gray-100">
                                     There are no posts in this group. Be the first and create it.
                                 </div>
                             </template>
-                            <div v-else class="py-8 text-center">
+                            <div v-else class="py-8 text-center dark:text-gray-100">
                                 You don't have permission to view these posts.
                             </div>
                         </TabPanel>
@@ -286,7 +286,7 @@ function updateGroup() {
                             <div class="mb-3">
                                 <TextInput :model-value="searchKeyword" placeholder="Type to search" class="w-full"/>
                             </div>
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 gap-3 dark:text-gray-100">
                                 <UserListItem v-for="user of users"
                                               :user="user"
                                               :key="user.id"
@@ -298,30 +298,31 @@ function updateGroup() {
                             </div>
                         </TabPanel>
                         <TabPanel v-if="isCurrentUserAdmin" class="">
-                            <div v-if="requests.length" class="grid grid-cols-2 gap-3">
+                            <div v-if="requests.length" class="grid grid-cols-1">
                                 <UserListItem v-for="user of requests"
                                               :user="user"
                                               :key="user.id"
                                               :for-approve="true"
-                                              class="shadow rounded-lg"
+                                              class="shadow rounded-lg dark:text-gray-100"
                                               @approve="approveUser"
                                               @reject="rejectUser"/>
                             </div>
-                            <div class="py-8 text-center">
+                            <div class="py-8 text-center dark:text-gray-100">
                                 There are no pending requests.
                             </div>
                         </TabPanel>
-                        <TabPanel class="bg-white p-3 shadow">
-                            Photos
+                        <TabPanel>
+                            <TabPhotos :photos="photos" />
                         </TabPanel>
-                        <TabPanel class="bg-white p-3 shadow">
+                        <TabPanel>
                             <template v-if="isCurrentUserAdmin">
                                 <GroupForm :form="aboutForm"/>
-                                <gray-button @click="updateGroup">
-                                    Save
-                                </gray-button>
+                                <PrimaryButton @click="updateGroup">
+                                    Submit
+                                </PrimaryButton>
                             </template>
-                            <div v-else class="ck-content-output" v-html="group.about">
+                            <div v-else class="ck-content-output dark:text-gray-100" v-html="group.about">
+
                             </div>
                         </TabPanel>
                     </TabPanels>

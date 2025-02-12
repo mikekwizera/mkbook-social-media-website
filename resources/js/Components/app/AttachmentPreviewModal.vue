@@ -6,7 +6,6 @@ import {
     TransitionChild,
     Dialog,
     DialogPanel,
-    DialogTitle,
 } from '@headlessui/vue'
 import {isImage, isVideo} from "@/helpers.js";
 

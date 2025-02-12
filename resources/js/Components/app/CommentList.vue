@@ -101,7 +101,7 @@ function onCommentDelete(comment) {
     <div class="flex gap-2 mb-3">
         <Link :href="route('profile', authUser.username)">
             <img :src="authUser.avatar_url"
-                 class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500"/>
+                 class="w-[30px] rounded-full border border-2 transition-all hover:border-blue-500"/>
         </Link>
         <div class="flex flex-1">
             <InputTextarea v-model="newCommentText" placeholder="Enter your comment here" rows="1"
@@ -115,7 +115,7 @@ function onCommentDelete(comment) {
                 <div class="flex gap-2">
                     <a href="javascript:void(0)">
                         <img :src="comment.user.avatar_url"
-                             class="w-[40px] rounded-full border border-2 transition-all hover:border-blue-500"/>
+                             class="w-[25px] rounded-full border border-2 transition-all hover:border-blue-500"/>
                     </a>
                     <div>
                         <h4 class="font-bold">

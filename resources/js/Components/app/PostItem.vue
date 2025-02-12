@@ -87,7 +87,7 @@ function sendReaction() {
 </script>
 
 <template>
-    <div class="bg-white border rounded p-4 mb-3">
+        <div class="bg-white border dark:bg-black dark:border-slate-900 dark:text-gray-100 rounded p-4 mb-3">
         <div class="flex items-center justify-between mb-3">
             <PostUserHeader :post="post"/>
             <div class="flex items-center gap-2">
@@ -118,23 +118,23 @@ function sendReaction() {
             <div class="flex gap-2">
                 <button
                     @click="sendReaction"
-                    class="text-gray-800 flex gap-1 items-center justify-center rounded-full px-4"
+                    class="text-gray-800 dark:text-gray-100 flex items-center justify-center py-1 px-4 rounded-full"
                     :class="[
                     post.current_user_has_reaction ?
-                     'bg-sky-400 hover:bg-sky-300' :
-                     'bg-gray-100  hover:bg-gray-200'
+                     'bg-sky-100 dark:bg-sky-900 hover:bg-sky-200 dark:hover:bg-sky-950' :
+                     'bg-gray-100 dark:bg-slate-800 dark:bg-slate-900 dark:hover:bg-slate-800 '
                 ]"
                 >
-                    <HandThumbUpIcon class="w-5 h-5"/>
-                    <span class="mr-2">{{ post.num_of_reactions }}</span>
-                    {{ post.current_user_has_reaction ? 'Like' : 'Like' }}
+                    <HandThumbUpIcon class="w-4 h-4"/>
+                    <span class="mr-1">{{ post.num_of_reactions }}</span>
+
                 </button>
                 <DisclosureButton
-                    class="text-gray-800 flex gap-1 items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200 py-2 px-4"
+                    class="text-gray-800 dark:text-gray-100 flex gap-1 items-center justify-center bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-full hover:bg-gray-200 py-1 px-4"
                 >
-                    <ChatBubbleLeftRightIcon class="w-5 h-5"/>
                     <span class="mr-2">{{ post.num_of_comments }}</span>
-                    Comment
+                    <ChatBubbleLeftRightIcon class="w-4 h-4"/>
+
                 </DisclosureButton>
             </div>
 
