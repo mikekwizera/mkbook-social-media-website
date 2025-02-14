@@ -23,6 +23,8 @@ const showNotification = ref(true)
 const coverImageSrc = ref('')
 const avatarImageSrc = ref('')
 const authUser = usePage().props.auth.user;
+const showFollowersModal = ref(false);
+const showFollowingsModal = ref(false);
 
 const isMyProfile = computed(() => authUser && authUser.id === props.user.id)
 
@@ -116,6 +118,14 @@ function followUser() {
     })
 }
 
+function toggleFollowersModal() {
+    showFollowersModal.value = !showFollowersModal.value;
+}
+
+function toggleFollowingsModal() {
+    showFollowingsModal.value = !showFollowingsModal.value;
+}
+
 </script>
 
 <template>
@@ -198,7 +208,13 @@ function followUser() {
                         <div class="flex justify-between items-center flex-1 p-4">
                             <div>
                                 <h2 class="font-bold text-lg">{{ user.name }}</h2>
-                                <p class="text-xs text-gray-500">{{ followerCount }} follower(s)</p>
+                                <span class="text-sm cursor-pointer text-gray-500 hover:text-blue-500" @click="toggleFollowersModal">
+                                    {{ followerCount }} follower(s)
+                                </span>
+                                &middot;
+                                <span class="text-sm cursor-pointer text-gray-500 hover:text-blue-500" @click="toggleFollowingsModal">
+                                    {{ followings.length }} following
+                                </span>
                             </div>
 
                             <div v-if="!isMyProfile">
@@ -220,12 +236,6 @@ function followUser() {
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Followers" :selected="selected"/>
-                        </Tab>
-                        <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Followings" :selected="selected"/>
-                        </Tab>
-                        <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Photos" :selected="selected"/>
                         </Tab>
                         <Tab v-if="isMyProfile" v-slot="{ selected }" as="template">
@@ -239,31 +249,6 @@ function followUser() {
                                 <CreatePost />
                                 <PostList :posts="posts.data" class="flex-1"/>
                             </template>
-                            <div v-else class="py-8 text-center dark:text-gray-100">
-                                You don't have permission to view these posts.
-                            </div>
-                        </TabPanel>
-                        <TabPanel>
-                            <div v-if="followers.length" class="mb-3 grid grid-cols-1 dark:text-gray-100">
-                                <UserListItem v-for="user of followers"
-                                              :user="user"
-                                              :key="user.id"
-                                              class="shadow rounded-lg"/>
-                            </div>
-                            <div v-else class="text-center py-8">
-                                User does not have followers.
-                            </div>
-                        </TabPanel>
-                        <TabPanel>
-                            <div v-if="followings.length" class="mb-3 grid grid-cols-1 dark:text-gray-100">
-                                <UserListItem v-for="user of followings"
-                                              :user="user"
-                                              :key="user.id"
-                                              class="shadow rounded-lg"/>
-                            </div>
-                            <div v-else class="text-center py-8">
-                                The user is not following to anybody
-                            </div>
                         </TabPanel>
                         <TabPanel>
                             <TabPhotos :photos="photos" />
@@ -273,6 +258,28 @@ function followUser() {
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>
+            </div>
+
+            <div v-if="showFollowersModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                <div class="bg-white p-4 rounded-lg w-96">
+                    <h2 class="text-lg font-bold mb-2">Followers</h2>
+                    <div v-if="followers.length">
+                        <UserListItem v-for="user in followers" :key="user.id" :user="user" />
+                    </div>
+                    <div v-else class="text-center">User does not have followers.</div>
+                    <button @click="toggleFollowersModal" class="mt-4 bg-gray-500 text-white px-4 py-2 rounded">Close</button>
+                </div>
+            </div>
+
+            <div v-if="showFollowingsModal" class="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+                <div class="bg-white p-4 rounded-lg w-96">
+                    <h2 class="text-lg font-bold mb-2">Following</h2>
+                    <div v-if="followings.length">
+                        <UserListItem v-for="user in followings" :key="user.id" :user="user" />
+                    </div>
+                    <div v-else class="text-center">The user is not following anybody.</div>
+                    <button @click="toggleFollowingsModal" class="mt-4 bg-gray-500 text-white px-4 py-2 rounded">Close</button>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>
