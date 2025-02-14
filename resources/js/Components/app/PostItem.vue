@@ -1,5 +1,5 @@
 <script setup>
-import {ChatBubbleLeftRightIcon, HandThumbUpIcon} from '@heroicons/vue/24/outline'
+import {ChatBubbleBottomCenterIcon, HandThumbUpIcon} from '@heroicons/vue/24/outline'
 import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
 import PostUserHeader from "@/Components/app/PostUserHeader.vue";
 import {router, useForm, usePage} from '@inertiajs/vue3'
@@ -127,14 +127,14 @@ function sendReaction() {
                 >
                     <HandThumbUpIcon class="w-4 h-4"/>
                     <span class="mr-1">{{ post.num_of_reactions }}</span>
-
+                    Like
                 </button>
                 <DisclosureButton
                     class="text-gray-800 dark:text-gray-100 flex gap-1 items-center justify-center bg-gray-100 dark:bg-slate-900 dark:hover:bg-slate-800 rounded-full hover:bg-gray-200 py-1 px-4"
                 >
                     <span class="mr-2">{{ post.num_of_comments }}</span>
-                    <ChatBubbleLeftRightIcon class="w-4 h-4"/>
-
+                    <ChatBubbleBottomCenterIcon class="w-4 h-4"/>
+                    Comment
                 </DisclosureButton>
             </div>
 
