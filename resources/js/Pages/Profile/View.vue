@@ -166,13 +166,13 @@ function toggleFollowingsModal() {
                         <div v-else class="flex gap-2 bg-white p-2 opacity-0 group-hover:opacity-100">
                             <button
                                 @click="resetCoverImage"
-                                class="bg-gray-50 hover:bg-gray-100 text-gray-800 py-1 px-2 text-xs flex items-center">
+                                class="bg-gray-150 hover:bg-gray-100 text-gray-800 py-1 px-2 text-xs flex items-center">
                                 <XMarkIcon class="h-3 w-3 mr-2"/>
                                 Cancel
                             </button>
                             <button
                                 @click="submitCoverImage"
-                                class="bg-gray-800 hover:bg-gray-900 text-gray-100 py-1 px-2 text-xs flex items-center">
+                                class="bg-green-800 hover:bg-green-900 text-gray-100 py-1 px-2 text-xs flex items-center rounded-full">
                                 <CheckCircleIcon class="h-3 w-3 mr-2"/>
                                 Submit
                             </button>
