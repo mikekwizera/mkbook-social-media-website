@@ -11,8 +11,8 @@ import CreatePost from "@/Components/app/CreatePost.vue";
 import PostList from "@/Components/app/PostList.vue";
 import UserListItem from "@/Components/app/UserListItem.vue";
 import TabPhotos from "@/Pages/Profile/TabPhotos.vue";
-import IndigoButton from '@/Components/app/IndigoButton.vue';
-import GrayButton from '@/Components/app/GrayButton.vue';
+import IndigoButton from "@/Components/app/IndigoButton.vue";
+import GrayButton from "@/Components/app/GrayButton.vue";
 
 const imagesForm = useForm({
     avatar: null,
@@ -174,7 +174,7 @@ function toggleFollowingsModal() {
                                 @click="submitCoverImage"
                                 class="bg-green-800 hover:bg-green-900 text-gray-100 py-1 px-2 text-xs flex items-center rounded-full">
                                 <CheckCircleIcon class="h-3 w-3 mr-2"/>
-                                Submit
+                                Save
                             </button>
                         </div>
                     </div>

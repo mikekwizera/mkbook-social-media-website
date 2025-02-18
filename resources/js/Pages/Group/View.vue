@@ -12,8 +12,8 @@ import TextInput from "@/Components/TextInput.vue";
 import GroupForm from "@/Components/app/GroupForm.vue";
 import PostList from "@/Components/app/PostList.vue";
 import CreatePost from "@/Components/app/CreatePost.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
 import IndigoButton from "@/Components/app/IndigoButton.vue";
-import GrayButton from "@/Components/app/GrayButton.vue";
 const imagesForm = useForm({
     thumbnail: null,
     cover: null,
@@ -229,22 +229,22 @@ function updateGroup() {
                         <div class="flex justify-between items-center flex-1 p-4">
                             <h2 class="font-bold text-lg">{{ group.name }}</h2>
 
-                            <indigo-button v-if="!authUser" :href="route('login')">
+                            <IndigoButton v-if="!authUser" :href="route('login')">
                                 Login to join to this group
-                            </indigo-button>
+                            </IndigoButton>
 
-                            <indigo-button v-if="isCurrentUserAdmin"
+                            <IndigoButton v-if="isCurrentUserAdmin"
                                            @click="showInviteUserModal = true">
                                 Invite Users
-                            </indigo-button>
-                            <indigo-button v-if="authUser && !group.role && group.auto_approval"
+                            </IndigoButton>
+                            <IndigoButton v-if="authUser && !group.role && group.auto_approval"
                                            @click="joinToGroup">
                                 Join to Group
-                            </indigo-button>
-                            <indigo-button v-if="authUser && !group.role && !group.auto_approval"
+                            </IndigoButton>
+                            <IndigoButton v-if="authUser && !group.role && !group.auto_approval"
                                            @click="joinToGroup">
                                 Request to join
-                            </indigo-button>
+                            </IndigoButton>
                         </div>
                     </div>
                 </div>

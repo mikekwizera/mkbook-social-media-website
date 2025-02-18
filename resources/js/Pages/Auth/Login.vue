@@ -87,7 +87,7 @@ const submit = () => {
                     Forgot your password?
                 </Link>
 
-                <Link :href="route('register')" class="text-gray-100 hover:blue-500 dark:text-gray-100 dark:hover:text-blue-500 mr-2">
+                <Link :href="route('register')" class="text-gray hover:text-blue-500 dark:text-gray-100 dark:hover:text-blue-500 mr-2">
                                         Sign up
                 </Link>
 

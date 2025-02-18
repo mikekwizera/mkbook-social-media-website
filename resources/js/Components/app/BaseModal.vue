@@ -28,7 +28,7 @@ function closeModal() {
 <template>
     <teleport to="body">
         <TransitionRoot appear :show="show" as="template">
-            <Dialog as="div" @close="closeModal" class="relative z-50">
+            <Dialog as="div" @close="closeModal" class="relative z-50" :class="class">
                 <TransitionChild
                     as="template"
                     enter="duration-300 ease-out"
