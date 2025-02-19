@@ -1,6 +1,6 @@
 <script setup>
-import {computed} from 'vue'
-import {XMarkIcon} from '@heroicons/vue/24/solid'
+import { computed } from 'vue'
+import { XMarkIcon } from '@heroicons/vue/24/solid'
 import {
     TransitionRoot,
     TransitionChild,
@@ -8,6 +8,11 @@ import {
     DialogPanel,
     DialogTitle,
 } from '@headlessui/vue'
+
+defineOptions({
+    inheritAttrs: false
+});
+
 const props = defineProps({
     title: {
         type: String,
@@ -15,11 +20,14 @@ const props = defineProps({
     },
     modelValue: Boolean
 })
+
+const emit = defineEmits(['update:modelValue', 'hide'])
+
 const show = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
 })
-const emit = defineEmits(['update:modelValue', 'hide'])
+
 function closeModal() {
     show.value = false
     emit('hide')
@@ -28,7 +36,7 @@ function closeModal() {
 <template>
     <teleport to="body">
         <TransitionRoot appear :show="show" as="template">
-            <Dialog as="div" @close="closeModal" class="relative z-50" :class="class">
+            <Dialog as="div" @close="closeModal" class="relative z-50">
                 <TransitionChild
                     as="template"
                     enter="duration-300 ease-out"
@@ -54,6 +62,7 @@ function closeModal() {
                             leave-to="opacity-0 scale-95"
                         >
                             <DialogPanel
+                                v-bind="$attrs"
                                 class="w-full max-w-md transform overflow-hidden rounded bg-white dark:bg-black text-left align-middle shadow-xl transition-all"
                             >
                                 <DialogTitle v-if="title" as="h3"
