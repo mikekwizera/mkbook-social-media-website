@@ -53,23 +53,21 @@ function onCoverChange(event) {
         reader.readAsDataURL(imagesForm.cover)
     }
 }
-function onThumbnailChange(event) {
-    imagesForm.thumbnail = event.target.files[0]
-    if (imagesForm.thumbnail) {
-        const reader = new FileReader()
-        reader.onload = () => {
-            thumbnailImageSrc.value = reader.result;
-        }
-        reader.readAsDataURL(imagesForm.thumbnail)
-    }
+function getAvatarColor(name) {
+  const colors = ['#FF5733', '#33FF57', '#5733FF', '#FF33A6', '#33FFF6']
+  const hash = name.charCodeAt(0)
+  return colors[hash % colors.length]
 }
+
+const avatarStyle = computed(() => {
+    return {
+        backgroundColor: getAvatarColor(props.group.name),
+    }
+})
+
 function resetCoverImage() {
     imagesForm.cover = null;
     coverImageSrc.value = null
-}
-function resetThurmbnailImage() {
-    imagesForm.thumbnail = null;
-    thumbnailImageSrc.value = null
 }
 function submitCoverImage() {
     imagesForm.post(route('group.updateImages', props.group.slug), {
@@ -77,18 +75,6 @@ function submitCoverImage() {
         onSuccess: () => {
             showNotification.value = true;
             resetCoverImage()
-            setTimeout(() => {
-                showNotification.value = false
-            }, 3000)
-        },
-    })
-}
-function submitThurmbnailImage() {
-    imagesForm.post(route('group.updateImages', props.group.slug), {
-        preserveScroll: true,
-        onSuccess: () => {
-            showNotification.value = true;
-            resetThurmbnailImage()
             setTimeout(() => {
                 showNotification.value = false
             }, 3000)
@@ -202,29 +188,11 @@ function updateGroup() {
                     <div class="flex">
                         <div
                             class="flex items-center justify-center relative group/thumbnail -mt-[64px] ml-[48px] w-[128px] h-[128px] rounded-full">
-                            <img :src="thumbnailImageSrc || group.thumbnail_url || '/img/default_avatar.jpg'"
-                                 class="w-full h-full object-cover rounded-full">
-                            <button
-                                v-if="isCurrentUserAdmin && !thumbnailImageSrc"
-                                class="absolute left-0 top-0 right-0 bottom-0 bg-black/50 text-gray-200 rounded-full opacity-0 flex items-center justify-center group-hover/thumbnail:opacity-100">
-                                <CameraIcon class="w-8 h-8"/>
-
-                                <input type="file" class="absolute left-0 top-0 bottom-0 right-0 opacity-0"
-                                       @change="onThumbnailChange"/>
-                            </button>
-
-                            <div v-else-if="isCurrentUserAdmin" class="absolute top-1 right-0 flex flex-col gap-2">
-                                <button
-                                    @click="resetThurmbnailImage"
-                                    class="w-7 h-7 flex items-center justify-center bg-red-500/80 text-white rounded-full">
-                                    <XMarkIcon class="h-5 w-5"/>
-                                </button>
-                                <button
-                                    @click="submitThurmbnailImage"
-                                    class="w-7 h-7 flex items-center justify-center bg-emerald-500/80 text-white rounded-full">
-                                    <CheckCircleIcon class="h-5 w-5"/>
-                                </button>
+                            <!-- Letter Avatar -->
+                            <div :style="avatarStyle" class="w-full h-full flex items-center justify-center rounded-full">
+                                <span class="text-4xl font-bold text-white">{{ group.name[0].toUpperCase() }}</span>
                             </div>
+                            <!-- End of Letter Avatar -->
                         </div>
                         <div class="flex justify-between items-center flex-1 p-4">
                             <h2 class="font-bold text-lg">{{ group.name }}</h2>
