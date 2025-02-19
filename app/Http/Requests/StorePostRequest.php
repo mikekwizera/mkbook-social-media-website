@@ -8,14 +8,16 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\File;
+
 class StorePostRequest extends FormRequest
 {
     public static array $extensions = [
         'jpg', 'jpeg', 'png', 'gif', 'webp',
         'mp3', 'wav', 'mp4',
-        "doc", "docx", "pdf", "csv", "xls", "xlsx",
-        "zip"
+        'doc', 'docx', 'pdf', 'csv', 'xls', 'xlsx',
+        'zip',
     ];
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,6 +25,7 @@ class StorePostRequest extends FormRequest
     {
         return true;
     }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -47,7 +50,7 @@ class StorePostRequest extends FormRequest
             ],
             'attachments.*' => [
                 'file',
-                File::types(self::$extensions),
+                File::types(self::$extensions),  // Checks that the file type is one of the accepted types
             ],
             'user_id' => ['numeric'],
             'group_id' => ['nullable', 'exists:groups,id', function($attribute, $value, \Closure $fail) {
@@ -61,22 +64,30 @@ class StorePostRequest extends FormRequest
             }]
         ];
     }
+
+    /**
+     * Prepare the data for validation.
+     */
     protected function prepareForValidation()
     {
         $body = $this->input('body') ?: '';
         $previewUrl = $this->input('preview_url') ?: '';
         $trimmedBody = trim(strip_tags($body));
+
         if ($trimmedBody === $previewUrl) {
-            $body = '';
+            $body = '';  // Set body as empty if it's the same as preview_url
         }
 
-        // Add your custom key to the request data
+        // Add user_id and sanitized body to the request data
         $this->merge([
             'user_id' => auth()->user()->id,
-            'body' => $body
+            'body' => $body,
         ]);
     }
 
+    /**
+     * Custom error messages for validation.
+     */
     public function messages()
     {
         return [

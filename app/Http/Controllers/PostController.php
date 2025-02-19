@@ -49,12 +49,12 @@ class PostController extends Controller
     {
         $data = $request->validated();
         $user = $request->user();
-
+    
         DB::beginTransaction();
         $allFilePaths = [];
         try {
             $post = Post::create($data);
-
+    
             /** @var \Illuminate\Http\UploadedFile[] $files */
             $files = $data['attachments'] ?? [];
             foreach ($files as $file) {
@@ -69,27 +69,30 @@ class PostController extends Controller
                     'created_by' => $user->id
                 ]);
             }
-
+    
+            // Commit the transaction
             DB::commit();
+    
+            // Notification
             $group = $post->group;
             if ($group) {
                 $users = $group->approvedUsers()->where('users.id', '!=', $user->id)->get();
                 Notification::send($users, new PostCreated($post, $user, $group));
             }
-
+    
             $followers = $user->followers;
             Notification::send($followers, new PostCreated($post, $user, null));
-            
         } catch (\Exception $e) {
+            // Rollback the transaction and delete files in case of an error
             foreach ($allFilePaths as $path) {
                 Storage::disk('public')->delete($path);
             }
             DB::rollBack();
             throw $e;
         }
-
+    
         return back();
-    }
+    }    
 
     /**
      * Update the specified resource in storage.
@@ -174,37 +177,51 @@ class PostController extends Controller
         $data = $request->validate([
             'reaction' => [Rule::enum(ReactionEnum::class)]
         ]);
-
+    
         $userId = Auth::id();
         $reaction = Reaction::where('user_id', $userId)
             ->where('object_id', $post->id)
             ->where('object_type', Post::class)
             ->first();
-
-        if ($reaction) {
-            $hasReaction = false;
-            $reaction->delete();
-        } else {
-            $hasReaction = true;
-            Reaction::create([
-                'object_id' => $post->id,
-                'object_type' => Post::class,
-                'user_id' => $userId,
-                'type' => $data['reaction']
-            ]);
-            if (!$post->isOwner($userId)) {
-                $user = User::where('id', $userId)->first();
-                $post->user->notify(new ReactionAddedOnPost($post, $user));
+    
+        DB::beginTransaction();  // Gukoresha transaction
+    
+        try {
+            if ($reaction) {
+                // Reakshoni irahari, tuyikuramo
+                $hasReaction = false;
+                $reaction->delete();
+            } else {
+                // Reakshoni ntiririmo, tuyiha post
+                $hasReaction = true;
+                Reaction::create([
+                    'object_id' => $post->id,
+                    'object_type' => Post::class,
+                    'user_id' => $userId,
+                    'type' => $data['reaction']
+                ]);
+                
+                // Notify the owner of the post
+                if (!$post->isOwner($userId)) {
+                    $user = User::where('id', $userId)->first();
+                    $post->user->notify(new ReactionAddedOnPost($post, $user));
+                }
             }
+    
+            DB::commit();  // Commit the transaction
+    
+            // Reactions count
+            $reactions = Reaction::where('object_id', $post->id)->where('object_type', Post::class)->count();
+    
+            return response([
+                'num_of_reactions' => $reactions,
+                'current_user_has_reaction' => $hasReaction
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();  // Rollback transaction if error occurs
+            throw $e;
         }
-
-        $reactions = Reaction::where('object_id', $post->id)->where('object_type', Post::class)->count();
-
-        return response([
-            'num_of_reactions' => $reactions,
-            'current_user_has_reaction' => $hasReaction
-        ]);
-    }
+    }    
 
     public function createComment(Request $request, Post $post)
     {
@@ -212,19 +229,28 @@ class PostController extends Controller
             'comment' => ['required'],
             'parent_id' => ['nullable', 'exists:comments,id']
         ]);
-
-        $comment = Comment::create([
-            'post_id' => $post->id,
-            'comment' => nl2br($data['comment']),
-            'user_id' => Auth::id(),
-            'parent_id' => $data['parent_id'] ?: null
-        ]);
-
-        $post = $comment->post;
-        $post->user->notify(new CommentCreated($comment, $post));
-
-        return response(new CommentResource($comment), 201);
-    }
+    
+        DB::beginTransaction();  // Start transaction
+    
+        try {
+            $comment = Comment::create([
+                'post_id' => $post->id,
+                'comment' => nl2br($data['comment']),
+                'user_id' => Auth::id(),
+                'parent_id' => $data['parent_id'] ?: null
+            ]);
+    
+            $post = $comment->post;
+            $post->user->notify(new CommentCreated($comment, $post));
+    
+            DB::commit();  // Commit the transaction
+    
+            return response(new CommentResource($comment), 201);
+        } catch (\Exception $e) {
+            DB::rollBack();  // Rollback transaction if error occurs
+            throw $e;
+        }
+    }    
 
     public function deleteComment(Comment $comment)
     {
