@@ -23,7 +23,7 @@ MkBook is a social media platform built using Laravel and Vue.js. The goal is to
 
 1. **Clone the Project**:
    ```bash
-  (https://github.com/mikekwizera/mkbook-social-media-website.git)
+  [ https://github.com/mikekwizera/mkbook-social-media-website.git ]
 
 ### 2.  Install Dependencies:
 
