@@ -7,7 +7,7 @@ MkBook is a social media platform built using Laravel and Vue.js. The goal is to
 - **User Profiles**: Users can set up and update their profiles.
 - **Post Management**: Users can create, edit, and delete their posts.
 - **Follow System**: Allows users to follow other users and view their content.
--   Dark mode
+- **Dark mode**
 - **Real-time Notifications**: Receive updates on activities in real time.
 - **Responsive Design**: The website is user-friendly and accessible on both mobile and desktop.
 
